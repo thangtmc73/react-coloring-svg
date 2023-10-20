@@ -2,7 +2,8 @@
 import React, { SVGProps } from "react";
 const childrenWithProps = (
   children: string | JSX.Element | JSX.Element[],
-  callback: (id: string) => void
+  callback: (id: string) => void,
+  colors: MapColor
 ): (string | JSX.Element)[] =>
   React.Children.map(children, (child) => {
     // Checking isValidElement is the safe way and avoids a
@@ -13,11 +14,12 @@ const childrenWithProps = (
           onClick: () => {
             callback(child.props.id);
           },
-          children: childrenWithProps(child.props.children, callback),
+          fill: colors[child.props.id] || "#ffff",
+          children: childrenWithProps(child.props.children, callback, colors),
         });
       }
       return React.cloneElement(child, {
-        children: childrenWithProps(child.props.children, callback),
+        children: childrenWithProps(child.props.children, callback, colors),
       });
     }
     return child;
@@ -27,7 +29,7 @@ interface ComponentProps extends SVGProps<SVGSVGElement> {
   colors: MapColor;
 }
 const SvgMonaLisa = React.memo((props: ComponentProps) => {
-  const { onItemClick } = props;
+  const { onItemClick, colors } = props;
   return (
     <>
       {childrenWithProps(
@@ -281,7 +283,8 @@ const SvgMonaLisa = React.memo((props: ComponentProps) => {
             />
           </g>
         </svg>,
-        onItemClick
+        onItemClick,
+        colors
       )}
     </>
   );

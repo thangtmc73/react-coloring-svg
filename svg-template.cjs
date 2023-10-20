@@ -5,14 +5,14 @@ const template = (variables, { tpl }) => {
 
   ${variables.interfaces};
 
-  const childrenWithProps = (children: string | JSX.Element | JSX.Element[], callback: (id: string) => void): (string | JSX.Element)[] => React.Children.map(children, child => {
+  const childrenWithProps = (children: string | JSX.Element | JSX.Element[], callback: (id: string) => void, colors: MapColor): (string | JSX.Element)[] => React.Children.map(children, child => {
     // Checking isValidElement is the safe way and avoids a
     // typescript error too.
     if (React.isValidElement(child)) {
       if (child.props.id) {
-        return React.cloneElement(child, { onClick: () => { callback(child.props.id); }, children: childrenWithProps(child.props.children, callback) });
+        return React.cloneElement(child, { onClick: () => { callback(child.props.id); }, fill: colors[child.props.id] || '#ffff', children: childrenWithProps(child.props.children, callback, colors) });
       }
-      return React.cloneElement(child, { children: childrenWithProps(child.props.children, callback) });
+      return React.cloneElement(child, { children: childrenWithProps(child.props.children, callback, colors) });
     }
     return child;
   });
@@ -25,9 +25,9 @@ const template = (variables, { tpl }) => {
 
 
   const ${variables.componentName} = React.memo((props: ComponentProps) => {
-    const { onItemClick } = props;
+    const { onItemClick, colors } = props;
     return (
-      <>{childrenWithProps(${variables.jsx}, onItemClick)}</>
+      <>{childrenWithProps(${variables.jsx}, onItemClick, colors)}</>
     );
   });
 
