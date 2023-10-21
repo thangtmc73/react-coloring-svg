@@ -1,6 +1,7 @@
 import { useState } from "react"
 import './App.css'
 import SvgMonaLisa from "./svg-components/MonaLisa";
+import MonaLisaSvg from "./assets/mona-lisa.svg";
 
 const COLORS = [
   '#844A09',
@@ -42,6 +43,9 @@ function App() {
         {COLORS.map(color => (
           <div style={{ background: color, width: '50px', height: '50px' }} onClick={() => setSelectedColor(color)} />
         ))}
+      </div>
+      <div>
+        <img src={MonaLisaSvg} style={{ width: '256px', height: '256px' }} />
       </div>
     </div>
   )
