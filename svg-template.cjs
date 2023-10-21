@@ -5,14 +5,27 @@ const template = (variables, { tpl }) => {
 
   ${variables.interfaces};
 
-  const childrenWithProps = (children: string | JSX.Element | JSX.Element[], callback: (id: string) => void, colors: MapColor): (string | JSX.Element)[] => React.Children.map(children, child => {
+interface ChildProps {
+  onClick?: () => void;
+  children?: React.ReactNode;
+  fill?: string;
+}
+
+  const childrenWithProps = (children: React.ReactNode, callback: (id: string) => void, colors: MapColor): React.ReactNode => React.Children.map(children, child => {
     // Checking isValidElement is the safe way and avoids a
     // typescript error too.
     if (React.isValidElement(child)) {
-      if (child.props.id) {
-        return React.cloneElement(child, { onClick: () => { callback(child.props.id); }, fill: colors[child.props.id] || '#ffff', children: childrenWithProps(child.props.children, callback, colors) });
+      const { props: { id, children } } = child;
+      const props: ChildProps = {
+        children: childrenWithProps(children, callback, colors),
       }
-      return React.cloneElement(child, { children: childrenWithProps(child.props.children, callback, colors) });
+      if (id) {
+        props.onClick = () => {
+          callback(id);
+        };
+        props.fill = colors[id] || "#ffff";
+      }
+      return React.cloneElement(child, props);
     }
     return child;
   });
